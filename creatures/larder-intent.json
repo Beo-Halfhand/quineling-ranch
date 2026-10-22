@@ -1,0 +1,126 @@
+{
+  "format": "qdl-intent",
+  "version": 1,
+  "name": "Halfhand's Larder",
+  "thought": {
+    "observations": [
+      {
+        "id": "obsHeld",
+        "text": "Smoothies Halfhand is carrying right now.",
+        "input": "held",
+        "path": [],
+        "basis": "open"
+      },
+      {
+        "id": "obsTarget",
+        "text": "How many he keeps on hand by design.",
+        "input": "target",
+        "path": [],
+        "basis": "open"
+      }
+    ],
+    "evidence": [],
+    "goals": [],
+    "decisions": [],
+    "plans": [
+      {
+        "id": "plan",
+        "text": "Work out the shortfall against his stock rule; extra smoothies count as full stock, so he never buys a negative amount.",
+        "tasks": [
+          "task"
+        ]
+      }
+    ],
+    "tasks": [
+      {
+        "id": "task",
+        "text": "Decide how many smoothies to buy at the store.",
+        "nodes": [
+          "held",
+          "target",
+          "counted",
+          "buy",
+          "low",
+          "restock"
+        ],
+        "outputs": [
+          "restock"
+        ]
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "id": "held",
+      "name": "held",
+      "type": {
+        "kind": "number",
+        "unit": "smoothie",
+        "integer": true,
+        "min": 0
+      }
+    },
+    {
+      "id": "target",
+      "name": "target",
+      "type": {
+        "kind": "number",
+        "unit": "smoothie",
+        "integer": true,
+        "min": 0
+      }
+    }
+  ],
+  "steps": [
+    {
+      "id": "counted",
+      "op": "arithmetic",
+      "inputs": [
+        "held",
+        "target"
+      ],
+      "params": {
+        "kind": "min"
+      }
+    },
+    {
+      "id": "buy",
+      "op": "arithmetic",
+      "inputs": [
+        "target",
+        "counted"
+      ],
+      "params": {
+        "kind": "sub"
+      }
+    },
+    {
+      "id": "low",
+      "op": "compareValues",
+      "inputs": [
+        "held",
+        "target"
+      ],
+      "params": {
+        "operator": "lt"
+      }
+    },
+    {
+      "id": "restock",
+      "op": "report",
+      "inputs": [
+        "low",
+        "buy"
+      ],
+      "params": {
+        "labels": [
+          "needsRestock",
+          "buy"
+        ]
+      }
+    }
+  ],
+  "outputs": [
+    "restock"
+  ]
+}

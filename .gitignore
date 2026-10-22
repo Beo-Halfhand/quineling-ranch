@@ -1,0 +1,10 @@
+node_modules/
+logs/
+*.log
+*.jsonl
+race-*.json
+judge-*.json
+.env
+.discord-*
+agent-id
+quinelings/
