@@ -1,0 +1,25 @@
+{
+  "start": 0,
+  "gathers": [
+    {
+      "item": "fish",
+      "at": 36
+    },
+    {
+      "item": "rooftop_tomato",
+      "at": 98
+    },
+    {
+      "item": "static_charge",
+      "at": 134
+    },
+    {
+      "item": "skybridge_cable",
+      "at": 144
+    },
+    {
+      "item": "ore",
+      "at": 165
+    }
+  ]
+}
