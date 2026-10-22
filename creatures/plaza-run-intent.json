@@ -1,0 +1,267 @@
+{
+  "format": "qdl-intent",
+  "version": 1,
+  "name": "kwigbo's Plaza Run",
+  "thought": {
+    "observations": [
+      {
+        "id": "obsStart",
+        "text": "Second the runner arrived beside kwigbo at Central Plaza 79,61 (the clock starts).",
+        "input": "start",
+        "path": [],
+        "basis": "open"
+      },
+      {
+        "id": "obsGathers",
+        "text": "One entry per gathered item with the second it landed, from the public City record.",
+        "input": "gathers",
+        "path": [],
+        "basis": "open"
+      }
+    ],
+    "evidence": [],
+    "goals": [],
+    "decisions": [],
+    "plans": [
+      {
+        "id": "plan",
+        "text": "All five different items, and the last one in before 247 seconds after arrival.",
+        "tasks": [
+          "task"
+        ]
+      }
+    ],
+    "tasks": [
+      {
+        "id": "task",
+        "text": "Judge one run of the Plaza challenge.",
+        "nodes": [
+          "start",
+          "gathers",
+          "distinct",
+          "kinds",
+          "five",
+          "allFive",
+          "anyRow",
+          "latest",
+          "finish",
+          "elapsed",
+          "limit",
+          "inTime",
+          "no",
+          "won",
+          "verdict"
+        ],
+        "outputs": [
+          "verdict"
+        ]
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "id": "start",
+      "name": "start",
+      "type": {
+        "kind": "number",
+        "unit": "second",
+        "integer": true,
+        "min": 0
+      }
+    },
+    {
+      "id": "gathers",
+      "name": "gathers",
+      "type": {
+        "kind": "array",
+        "element": {
+          "kind": "record",
+          "fields": {
+            "item": {
+              "kind": "string",
+              "enum": [
+                "fish",
+                "rooftop_tomato",
+                "skybridge_cable",
+                "static_charge",
+                "ore"
+              ]
+            },
+            "at": {
+              "kind": "number",
+              "unit": "second",
+              "integer": true,
+              "min": 0
+            }
+          }
+        },
+        "minLength": 1,
+        "maxLength": 20
+      }
+    }
+  ],
+  "steps": [
+    {
+      "id": "distinct",
+      "op": "dedupe",
+      "inputs": [
+        "gathers"
+      ],
+      "params": {
+        "key": "item"
+      }
+    },
+    {
+      "id": "kinds",
+      "op": "length",
+      "inputs": [
+        "distinct"
+      ],
+      "params": {}
+    },
+    {
+      "id": "five",
+      "op": "literal",
+      "inputs": [],
+      "params": {
+        "value": 5
+      },
+      "type": {
+        "kind": "number",
+        "unit": "count",
+        "integer": true,
+        "min": 0
+      }
+    },
+    {
+      "id": "allFive",
+      "op": "compareValues",
+      "inputs": [
+        "kinds",
+        "five"
+      ],
+      "params": {
+        "operator": "gte"
+      }
+    },
+    {
+      "id": "anyRow",
+      "op": "literal",
+      "inputs": [],
+      "params": {
+        "value": {}
+      },
+      "type": {
+        "kind": "record",
+        "fields": {}
+      }
+    },
+    {
+      "id": "latest",
+      "op": "select",
+      "inputs": [
+        "gathers",
+        "anyRow"
+      ],
+      "params": {
+        "keys": [],
+        "order": [
+          {
+            "path": "at",
+            "descending": true
+          }
+        ],
+        "default": {
+          "item": "ore",
+          "at": 0
+        }
+      }
+    },
+    {
+      "id": "finish",
+      "op": "get",
+      "inputs": [
+        "latest"
+      ],
+      "params": {
+        "path": "value.at"
+      }
+    },
+    {
+      "id": "elapsed",
+      "op": "arithmetic",
+      "inputs": [
+        "finish",
+        "start"
+      ],
+      "params": {
+        "kind": "sub"
+      }
+    },
+    {
+      "id": "limit",
+      "op": "literal",
+      "inputs": [],
+      "params": {
+        "value": 247
+      },
+      "type": {
+        "kind": "number",
+        "unit": "second",
+        "integer": true,
+        "min": 0
+      }
+    },
+    {
+      "id": "inTime",
+      "op": "compareValues",
+      "inputs": [
+        "elapsed",
+        "limit"
+      ],
+      "params": {
+        "operator": "lt"
+      }
+    },
+    {
+      "id": "no",
+      "op": "literal",
+      "inputs": [],
+      "params": {
+        "value": false
+      },
+      "type": {
+        "kind": "boolean"
+      }
+    },
+    {
+      "id": "won",
+      "op": "choose",
+      "inputs": [
+        "allFive",
+        "inTime",
+        "no"
+      ],
+      "params": {}
+    },
+    {
+      "id": "verdict",
+      "op": "report",
+      "inputs": [
+        "won",
+        "elapsed",
+        "kinds"
+      ],
+      "params": {
+        "labels": [
+          "won",
+          "seconds",
+          "items"
+        ]
+      }
+    }
+  ],
+  "outputs": [
+    "verdict"
+  ]
+}
